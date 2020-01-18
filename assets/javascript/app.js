@@ -1,12 +1,11 @@
 // hide questions
 $(document).ready(function() {
   $("#question-container").hide();
-  $("#next-btn").hide();
   $(".btn-success").hide();
   $(".btn-wrong").hide();
   $("#start-btn").on("click", game.startGame);
-  $(document).on("click", "#answer-buttons", game.checker);
-  //   $("#next-btn").on("click", game.nextQuestion);
+  $("#next-btn").on("click", game.nextQuestion);
+  $(document).on("click", ".answer-btn", game.checker);
 });
 
 // game properities
@@ -15,9 +14,10 @@ var game = {
   incorrect: 0,
   currentSet: 0,
   unanswered: 0,
-  timer: 20,
+  timer: 10,
   timeOn: false,
   timerId: "",
+  qIndex: 0,
 
   startGame: function() {
     game.currentSet = 0;
@@ -33,22 +33,28 @@ var game = {
   },
 
   timeRunning: function() {
-    if (
-      game.timer > -1 &&
-      game.currentSet < Object.keys(game.questions).length
+    // if (
+    //   game.timer > -1 &&
+    //   game.currentSet < Object.keys(game.questionsAndAnswer).length
+    // ) {
+    game.timer--;
+    $("#timer").html(game.timer);
+    // } else
+    if (!game.timer) {
+      if (game.qIndex < 5) {
+        game.nextQuestion();
+      }
+      // game.unanswered++;
+      // game.result = false;
+      // clearInterval(game.timerId);
+      // resultId = setTimeout(game.guessResult, 1000);
+      // $("#results").text(
+      //   "<h1>The correct answer was " +
+      //     Object.values(game.questionsAndAnswer[game.currentSet] + "</h1>")
+      // );
+    } else if (
+      game.currentSet === Object.keys(game.questionsAndAnswer).length
     ) {
-      $("#timer").html(game.timer);
-      game.timer--;
-    } else if (game.timer === -1) {
-      game.unanswered++;
-      game.result = false;
-      clearInterval(game.timerId);
-      resultId = setTimeout(game.guessResult, 1000);
-      $("#results").text(
-        "<h1>The correct answer was " +
-          Object.values(game.answers[game.currentSet] + "</h1>")
-      );
-    } else if (game.currentSet === Object.keys(game.questions).length) {
       $("#results").html(
         "<h2>" +
           "Good Game" +
@@ -67,50 +73,64 @@ var game = {
           "</h5>"
       );
 
-      $("#question-container").hide();
-      $("#start-btn").show();
+      // $("#question-container").hide();
     }
+  },
+
+  checker: function() {
+    var currectAnswer = game.questionsAndAnswer[game.qIndex - 1].a;
+    console.log("current ans: " + currectAnswer);
+    console.log("test: " + $(this).text());
+    if ($(this).text() === currectAnswer) {
+      $(".answer-btn").addClass("btn btn-primary");
+
+      console.log("correct anws is:" + currectAnswer);
+      console.log(game.qIndex);
+      game.correct++;
+    } else {
+      $(".answer-btn").addClass("btn btn-danger");
+      console.log(game.qIndex);
+
+      // .removeClass("btn-success");
+    }
+
+    if (game.qIndex < game.questionsAndAnswer.length) {
+      game.nextQuestion();
+    } else {
+      clearInterval(game.timerId);
+      var scoreBoard = $("<div>");
+      scoreBoard.addClass("scoreBoard");
+      scoreBoard.html(
+        "<h1 class='text-center align-center'> Correct: " +
+          game.correct +
+          "/" +
+          game.questionsAndAnswer.length +
+          "</h1>"
+      );
+      $(".container").html(scoreBoard);
+    }
+    $(".answer-btn").removeClass("btn btn-primary");
+    $(".answer-btn").removeClass("btn btn-danger");
   },
 
   nextQuestion: function() {
     game.timer = 10;
     $("#timer").html(game.timer);
+    $("#question-container").remove(".checker");
     $("#question-container").show();
 
     if (!game.timeOn) {
-      game.timerId = setInterval(game.timeRunning, 1000);
-    }
-    var questionDisplay = Object.values(game.questions)[game.currentSet];
-    var questionOpition = Object.values(game.options)[game.currentSet];
-    $("#question").text(questionDisplay);
-    $("#answer-buttons").attr("my-button", questionOpition);
-    // $("#answer-buttons").text(questionOpition);
-    // $("#answer-buttons").text(questionOpition);
-  },
-
-  checker: function() {
-    var resultId;
-    var currectAnswer = Object.values(game.answers)[game.currentSet];
-    console.log("checker func called :" + currectAnswer);
-    //這邊不懂
-    console.log("test" + this);
-    if ($(this).val() === currectAnswer) {
-      $("#question-container").addClass("btn-success");
-      console.log("test" + this.text);
-
-      game.correct++;
-      resultId = setTimeout(game.guessResult, 1000);
-      "#results".text("<h1>" + "Correct Answer!!! " + "</h1>");
-    } else {
-      $("#answer-buttons")
-        .addClass("btn-wrong")
-        .removeClass("btn-success");
-
-      game.incorrect++;
       clearInterval(game.timerId);
-      resultId = setTimeout(game.guessResult, 1000);
-      $("#results").text("<h1>" + "Wrongggggg :(((" + currectAnswer + "</h1>");
+      game.timerId = setInterval(() => {
+        game.timeRunning();
+      }, 1000);
     }
+
+    $("#question").text(game.questionsAndAnswer[game.qIndex].q);
+    for (let i = 0; i < game.questionsAndAnswer[game.qIndex].opt.length; i++) {
+      $("#answer-btn" + i).html(game.questionsAndAnswer[game.qIndex].opt[i]);
+    }
+    game.qIndex++;
   },
 
   guessResult: function() {
@@ -120,26 +140,31 @@ var game = {
     game.nextQuestion;
   },
 
-  questions: {
-    q1: ["AAAAAAAAA"],
-    q2: ["BBBBBBBBB"],
-    q3: ["CCCCCCCCC"],
-    q4: ["DDDDDDDDD"],
-    q5: ["EEEEEEEEE"]
-  },
-
-  options: {
-    q1: ["1", "2", "3", "4"],
-    q2: ["1", "2", "3", "4"],
-    q3: ["1", "2", "3", "4"],
-    q4: ["1", "2", "3", "4"],
-    q5: ["1", "2", "3", "5"]
-  },
-  answers: {
-    q1: ["1"],
-    q2: ["2"],
-    q3: ["3"],
-    q4: ["4"],
-    q5: ["5"]
-  }
+  questionsAndAnswer: [
+    {
+      q: ["1. Where is Amber from?"],
+      opt: ["China", "Taiwan", "Thailand", "Cambodia"],
+      a: "Taiwan"
+    },
+    {
+      q: ["2. What is Amber's favorite color?"],
+      opt: ["Red", "Pink", "Yellow", "Green"],
+      a: "Pink"
+    },
+    {
+      q: ["3. Who is Amber's favorite singer?"],
+      opt: ["Kanye West", "D Smoke", "Katy Perry", "Taylor Swift"],
+      a: "Taylor Swift"
+    },
+    {
+      q: ["4. Which one is Amber's favorite movie?"],
+      opt: ["One Day", "Atonement", "Harry Potter", "She loves all of them."],
+      a: "She loves all of them."
+    },
+    {
+      q: ["5. Who is Amber fav person?"],
+      opt: ["Tito", "Milo", "Kashif", "She couldn't decide..."],
+      a: "Kashif"
+    }
+  ]
 };

@@ -32,3 +32,21 @@ h2 {
   font-size: 25px;
   color: #005463;
 }
+
+#next-btn {
+  display: none;
+}
+
+.answer-btn:hover {
+  background-color: rgb(255, 255, 208);
+  border: 1px solid white;
+  color: black;
+}
+
+#checker {
+  display: none;
+}
+
+#result {
+  margin-top: 50%;
+}

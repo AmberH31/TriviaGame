@@ -17,7 +17,7 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="assets/css/style.css" />
-    <script src="assets/javascript/app.js"></script>
+
     <title>Trivia Game!!!</title>
   </head>
   <body>
@@ -27,24 +27,22 @@
       <div id="question-container">
         <div id="question"></div>
         <div id="answer-buttons" value="my-button">
-          <button class="btn alert alert-light">
+          <button class="btn alert alert-light answer-btn" id="answer-btn0">
             Answer 1
           </button>
-          <button class="btn alert alert-light">
+          <button class="btn alert alert-light answer-btn" id="answer-btn1">
             Answer 2
           </button>
-          <button class="btn alert alert-light">
+          <button class="btn alert alert-light answer-btn" id="answer-btn2">
             Answer 3
           </button>
-          <button class="btn alert alert-light">
+          <button class="btn alert alert-light answer-btn" id="answer-btn3">
             Answer 4
           </button>
-          <button class="btn alert alert-success btn-success">
-            Congract!!
-          </button>
-          <button class="btn alert alert-danger btn-wrong">
-            Wrong!!
-          </button>
+          <div id="checker">
+            <button class="btn alert alert-success btn-success"></button>
+            <button class="btn alert alert-danger btn-wrong"></button>
+          </div>
         </div>
         <div class="time">
           <p>Remaining Time</p>
@@ -54,9 +52,12 @@
       </div>
       <div id="controlers">
         <button id="start-btn" class="alert alert-info">Start</button>
-        <button id="next-btn" class="alert alert-info">Next</button>
+        <button id="next-btn" class="alert alert-info">
+          Next
+        </button>
       </div>
       <!-- 加上bn-success -->
     </div>
+    <script src="assets/javascript/app.js"></script>
   </body>
 </html>
